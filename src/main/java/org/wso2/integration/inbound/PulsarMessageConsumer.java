@@ -81,17 +81,16 @@ public class PulsarMessageConsumer extends GenericPollingConsumer {
     private SubscriptionType subscriptionType;
     private SubscriptionInitialPosition subscriptionInitialPosition;
     private String consumerName;
-
     private Integer messageWaitTimeout = 1000;
     private Long ackTimeoutMillis;
     private Long nackRedeliveryDelayMillis;
-
     private Integer priorityLevel;
     private Integer receiverQueueSize;
     private Integer maxTotalReceiverQueueSizeAcrossPartitions;
-
     private String dlqTopic;
     private Integer dlqMaxRedeliverCount;
+    private String contentType;
+    private Boolean receiveSync = true;
 
     // Configuration for chunked messages
     private Boolean autoAckOldestChunkedMessageOnQueueFull;
@@ -102,9 +101,6 @@ public class PulsarMessageConsumer extends GenericPollingConsumer {
     private Integer autoUpdatePartitionsIntervalSeconds;
     private Boolean replicateSubscriptionState;
     private Boolean readCompacted;
-    private SortedMap<String, String> properties;
-
-    private Boolean receiveSync = true;
 
     // Batching related configurations
     private Boolean batchReceiveEnabled;
@@ -112,7 +108,6 @@ public class PulsarMessageConsumer extends GenericPollingConsumer {
     private Integer batchingMaxBytes;
     private Integer batchingTimeout;
     private Boolean batchIndexAcknowledgmentEnabled;
-    private String contentType;
 
     // Thread pool for processing messages asynchronously
     int corePoolSize = 4;       // minimum number of threads
@@ -143,6 +138,13 @@ public class PulsarMessageConsumer extends GenericPollingConsumer {
 
         try {
             if (consumer == null) {
+                consumer = createConsumer(configuration);
+            }
+            if (!consumer.isConnected()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Connecting to Pulsar broker for consumer: " + consumer.getConsumerName());
+                }
+                client = createPulsarConnection(configuration);
                 consumer = createConsumer(configuration);
             }
             consumeMessages();
@@ -176,8 +178,12 @@ public class PulsarMessageConsumer extends GenericPollingConsumer {
                     if (messages.size() == 0) {
                         return;
                     }
-                    for (Message<String> msg : messages) {
-                        processMessageAsync(msg);
+                    if (batchIndexAcknowledgmentEnabled) {
+                        processBatchAsync(messages);
+                    } else {
+                        for (Message<String> msg : messages) {
+                            processMessageAsync(msg);
+                        }
                     }
                 });
             }
@@ -200,18 +206,30 @@ public class PulsarMessageConsumer extends GenericPollingConsumer {
         }
     }
 
-//    private void processBatchAsync(Messages<String> messages) {
-//        for (Message<String> msg : messages) {
-//            boundedExecutor.submit(() -> {
-//                MessageContext msgCtx = PulsarUtils.populateMessageContext(msg, synapseEnvironment);
-//                boolean isConsumed = injectMessage(msg.getValue(), contentType, msgCtx);
-//
-//                if (!isConsumed) {
-//                    throw new Exception("Message with ID: " + msg.getMessageId() + " was not consumed successfully.");
-//                }
-//            });
-//        }
-//    }
+    private void processBatchAsync(Messages<String> messages) {
+        boundedExecutor.submit(() -> {
+            boolean isConsumed = true;
+            for (Message<String> msg : messages) {
+                MessageContext msgCtx = PulsarUtils.populateMessageContext(msg, synapseEnvironment);
+                isConsumed = injectMessage(msg.getValue(), contentType, msgCtx);
+
+                if (!isConsumed) {
+                    break;
+                }
+            }
+
+            if (isConsumed) {
+                // Acknowledge all messages in the batch
+                consumer.acknowledgeAsync(messages);
+            } else {
+                // Negative acknowledge all messages in the batch for retry
+                consumer.negativeAcknowledge(messages);
+                if (log.isDebugEnabled()) {
+                    log.debug("Batch of messages was not consumed successfully. Negative acknowledgment sent for retry.");
+                }
+            }
+        });
+    }
 
     private void processMessageAsync(Message<String> msg) {
 
@@ -292,7 +310,7 @@ public class PulsarMessageConsumer extends GenericPollingConsumer {
         // Logic to create and return a Pulsar consumer based on the configuration
         // This will involve using the Pulsar client library to create a consumer
         // with the specified topic, subscription, and other configurations.
-        if (client == null) {
+        if (client == null || client.isClosed()) {
             this.client = createPulsarConnection(configuration);
         }
 

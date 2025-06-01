@@ -21,11 +21,14 @@ package org.wso2.integration.inbound.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pulsar.client.api.Message;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
+import org.wso2.integration.inbound.PulsarMessageConsumer;
 import org.wso2.integration.inbound.pojo.ConnectionConfiguration;
 import org.wso2.integration.inbound.pojo.JWTAuthConfig;
 import org.wso2.integration.inbound.pojo.PulsarConnectionConfig;
@@ -36,6 +39,8 @@ import java.util.Properties;
 import java.util.UUID;
 
 public class PulsarUtils {
+
+    private static final Log log = LogFactory.getLog(PulsarUtils.class);
 
     public static PulsarConnectionConfig getPulsarConnectionConfigFromContext(Properties properties,
                                                                         PulsarConnectionConfig config)
@@ -116,9 +121,11 @@ public class PulsarUtils {
                     break;
                 case PulsarConstants.AUTH_OAUTH2:
                     // Handle OAuth2 authentication
+                    log.warn("OAuth2 authentication is not supported yet.");
                     break;
                 case PulsarConstants.AUTH_TLS:
                     // Handle TLS authentication
+                    log.warn("TLS authentication is not supported yet.");
                     break;
                 case PulsarConstants.AUTH_NONE:
                     // Handle no authentication
