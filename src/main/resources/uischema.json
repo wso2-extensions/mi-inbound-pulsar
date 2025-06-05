@@ -1,0 +1,1045 @@
+{
+  "id": "org.wso2.integration.inbound.PulsarMessageConsumer",
+  "name": "pulsarInbound",
+  "type": "event-integration",
+  "title": "pulsar",
+  "help": "Configure the Pulsar Inbound Endpoint for efficient and secure message consumption from Apache Pulsar cluster.",
+  "elements": [
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Generic",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "name",
+              "displayName": "Event Integration Name",
+              "inputType": "string",
+              "required": "true",
+              "helpTip": "Unique identifier for the Pulsar event integration."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "class",
+              "displayName": "Class Name",
+              "inputType": "string",
+              "required": "true",
+              "hidden": true,
+              "defaultValue": "org.wso2.integration.inbound.PulsarMessageConsumer"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "generateSequences",
+              "displayName": "Automatically generate sequences",
+              "inputType": "checkbox",
+              "defaultValue": true
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "sequence",
+              "displayName": "Injecting Sequence Name",
+              "inputType": "keyOrExpression",
+              "keyType": "sequence",
+              "required": "true",
+              "enableCondition": [{"generateSequences":false}],
+              "helpTip": "Sequence to inject the Pulsar message"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "onError",
+              "displayName": "Error Sequence Name",
+              "inputType": "keyOrExpression",
+              "keyType": "sequence",
+              "required": "true",
+              "enableCondition": [{"generateSequences":false}],
+              "helpTip": "Error sequence to invoke on fault"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "suspend",
+              "displayName": "Suspend Inbound",
+              "inputType": "boolean",
+              "defaultValue": false,
+              "hidden": true,
+              "required": "false",
+              "helpTip": "Suspend Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Inbound Functional",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "interval",
+              "displayName": "Polling interval",
+              "inputType": "string",
+              "required": "true",
+              "helpTip": "The polling interval for the Apache Pulsar inbound endpoint in milliseconds.",
+              "defaultValue": "100"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "coordination",
+              "displayName": "Coordination",
+              "inputType": "boolean",
+              "defaultValue": true,
+              "required": "false",
+              "helpTip": "In a clustered setup, this will run the inbound only in a single worker node."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Pulsar Connection",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "useTLS",
+              "displayName": "Enable TLS Encryption",
+              "inputType": "boolean",
+              "defaultValue": "false",
+              "required": "true",
+              "helpTip": "Enable TLS to secure the connection between the client and Pulsar broker."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "serviceUrl",
+              "displayName": "Broker URL",
+              "inputType": "string",
+              "required": "true",
+              "defaultValue": "",
+              "placeholder": "pulsar://",
+              "helpTip": "The Pulsar service URL to connect to (e.g., pulsar://localhost:6650)."
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Security",
+              "isCollapsed": true,
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "tlsAllowInsecureConnection",
+                    "displayName": "Allow Insecure TLS Connection",
+                    "inputType": "boolean",
+                    "defaultValue": "false",
+                    "required": "false",
+                    "helpTip": "Allow insecure TLS connections by skipping certificate validation."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "useKeyStoreTls",
+                    "displayName": "Use KeyStore TLS",
+                    "inputType": "boolean",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Enable TLS using a Java KeyStore.",
+                    "enableCondition": [
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "tlsTrustCertsFilePath",
+                    "displayName": "Broker CA Certificate Path",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Path to the trusted TLS certificate file.",
+                    "enableCondition": [
+                      "AND",
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      },
+                      {
+                        "useKeyStoreTls": "false"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "tlsTrustStorePath",
+                    "displayName": "TLS TrustStore Path",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Path to the TLS trust store file.",
+                    "enableCondition": [
+                      "AND",
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      },
+                      {
+                        "useKeyStoreTls": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "tlsTrustStorePassword",
+                    "displayName": "TLS TrustStore Password",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Password for the TLS trust store.",
+                    "enableCondition": [
+                      "AND",
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      },
+                      {
+                        "useKeyStoreTls": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "tlsTrustStoreType",
+                    "displayName": "TLS TrustStore Type",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Type of the TLS trust store (e.g., JKS, PKCS12).",
+                    "enableCondition": [
+                      "AND",
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      },
+                      {
+                        "useKeyStoreTls": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "tlsProtocols",
+                    "displayName": "TLS Protocols",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Comma-separated list of enabled TLS protocols (e.g., TLSv1.2,TLSv1.3).",
+                    "enableCondition": [
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "tlsCiphers",
+                    "displayName": "TLS Ciphers",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Comma-separated list of enabled TLS cipher suites.",
+                    "enableCondition": [
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "autoCertRefreshSeconds",
+                    "displayName": "Auto Certificate Refresh Interval (in seconds)",
+                    "inputType": "string",
+                    "validateType": "number",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Interval in seconds to automatically refresh TLS certificates.",
+                    "enableCondition": [
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "enableTlsHostnameVerification",
+                    "displayName": "Enable TLS Hostname Verification",
+                    "inputType": "boolean",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Enable hostname verification for TLS connections.",
+                    "enableCondition": [
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "enableCondition": [
+                {
+                  "useTLS": "true"
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Authentication",
+              "isCollapsed": true,
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "authenticationType",
+                    "displayName": "Authentication Type",
+                    "inputType": "combo",
+                    "defaultValue": "None",
+                    "required": "false",
+                    "helpTip": "The authentication mechanism to use for authenticating with Pulsar. Supported values: None, JWT, TLS, OAuth2.",
+                    "comboValues": [
+                      "None",
+                      "JWT"
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "jwtToken",
+                    "displayName": "JWT Token",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The JSON Web Token (JWT) used for authenticating with the Pulsar broker.",
+                    "enableCondition": [
+                      {
+                        "authenticationType": "JWT"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Advanced",
+              "isCollapsed": true,
+              "elements": [
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Connection Timeouts",
+                    "isCollapsed": false,
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "connectionTimeoutMs",
+                          "displayName": "Connection Timeout (in milliseconds)",
+                          "inputType": "string",
+                          "defaultValue": "",
+                          "required": "false",
+                          "validateType": "number",
+                          "helpTip": "Timeout for establishing a connection (in milliseconds)."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "operationTimeoutSeconds",
+                          "displayName": "Operation Timeout (in seconds)",
+                          "inputType": "string",
+                          "defaultValue": "",
+                          "required": "false",
+                          "validateType": "number",
+                          "helpTip": "Timeout for client operations (in seconds)."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "requestTimeoutMs",
+                          "displayName": "Request Timeout (in milliseconds)",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Timeout for requests (in milliseconds)."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "lookupTimeoutMs",
+                          "displayName": "Lookup Timeout (in milliseconds)",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Timeout for lookup requests (in milliseconds)."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "connectionMaxIdleSeconds",
+                          "displayName": "Connection Max Idle Time (in seconds)",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Maximum idle time for connections (in seconds)."
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Threading & Performance",
+                    "isCollapsed": false,
+                    "elements":[
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "numIoThreads",
+                          "displayName": "Number of IO Threads",
+                          "inputType": "string",
+                          "defaultValue": "",
+                          "required": "false",
+                          "validateType": "number",
+                          "helpTip": "Number of IO threads for Pulsar client."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "numListenerThreads",
+                          "displayName": "Number of Listener Threads",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Number of listener threads for Pulsar client."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "enableBusyWait",
+                          "displayName": "Enable Busy Wait",
+                          "inputType": "boolean",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Enable busy-wait for IO threads."
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Reconnection & Backoff",
+                    "isCollapsed": false,
+                    "elements":[
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "initialBackoffIntervalNanos",
+                          "displayName": "Initial Backoff Interval (in nanoseconds)",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Initial backoff interval for reconnection attempts (in nanoseconds)."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "maxBackoffIntervalNanos",
+                          "displayName": "Max Backoff Interval (in nanoseconds)",
+                          "inputType": "string",
+                          "defaultValue": "",
+                          "validateType": "number",
+                          "required": "false",
+                          "helpTip": "Maximum backoff interval for reconnection attempts (in nanoseconds)."
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Connection Pooling",
+                    "isCollapsed": false,
+                    "elements":[
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "connectionsPerBroker",
+                          "displayName": "Number of Connections Per Broker",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Number of connections per broker."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "concurrentLookupRequest",
+                          "displayName": "Number of Concurrent Lookup Requests",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Number of concurrent lookup requests allowed."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "maxLookupRedirects",
+                          "displayName": "Maximum Number of Lookup Redirects",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Maximum number of lookup redirects allowed."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "maxLookupRequest",
+                          "displayName": "Maximum Number of Lookup Requests",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Maximum number of lookup requests."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "maxNumberOfRejectedRequestPerConnection",
+                          "displayName": "Maximum Number Of Rejected Request Per Connection",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Maximum number of rejected requests per connection."
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Other",
+                    "isCollapsed": false,
+                    "elements":[
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "useTcpNoDelay",
+                          "displayName": "Enable TCP No Delay",
+                          "inputType": "boolean",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Enable TCP no delay for network connections."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "enableTransaction",
+                          "displayName": "Enable Transaction",
+                          "inputType": "boolean",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Enable transaction support in Pulsar client."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "keepAliveIntervalSeconds",
+                          "displayName": "Keep Alive Interval (in seconds)",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Keep-alive interval for broker connections (in seconds)."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "statsIntervalSeconds",
+                          "displayName": "Stats Interval (in seconds)",
+                          "inputType": "string",
+                          "defaultValue": "",
+                          "required": "false",
+                          "validateType": "number",
+                          "helpTip": "Interval for statistics collection (in seconds)."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "memoryLimitBytes",
+                          "displayName": "Memory Limit (in bytes)",
+                          "inputType": "string",
+                          "validateType": "number",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Memory limit for Pulsar client (in bytes)."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "listenerName",
+                          "displayName": "Listener Name",
+                          "inputType": "string",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Listener name for the Pulsar client."
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Consumer",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "topicNames",
+              "displayName": "Topic(s)",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "Comma-separated list of topic names to subscribe to."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "topicsPattern",
+              "displayName": "Topics Pattern",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "Pattern to match topic names for subscription."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "subscriptionName",
+              "displayName": "Subscription Name",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "Name of the subscription."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "subscriptionType",
+              "displayName": "Subscription Type",
+              "inputType": "combo",
+              "defaultValue": "Exclusive",
+              "required": "false",
+              "helpTip": "Type of subscription (e.g., Exclusive, Shared, Failover, Key_Shared).",
+              "comboValues": [
+                "Exclusive",
+                "Shared",
+                "Failover",
+                "Key_Shared"
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "subscriptionTopicsMode",
+              "displayName": "Subscription Topics Mode",
+              "inputType": "combo",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "Mode for subscribing to topics (e.g., AllTopics, PersistentOnly, NonPersistentOnly).",
+              "comboValues": [
+                "AllTopics",
+                "PersistentOnly",
+                "NonPersistentOnly"
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "subscriptionInitialPosition",
+              "displayName": "Subscription Initial Position",
+              "inputType": "combo",
+              "defaultValue": "Latest",
+              "required": "false",
+              "helpTip": "Initial position for the subscription (e.g., Latest, Earliest).",
+              "comboValues": [
+                "Latest",
+                "Earliest"
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "contentType",
+              "displayName": "Message Content Type",
+              "inputType": "combo",
+              "required": "true",
+              "helpTip": "The content type of the incoming Pulsar message (e.g., application/json, text/xml).",
+              "defaultValue": "text/plain",
+              "comboValues": [
+                "application/json",
+                "text/plain"
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "processingMode",
+              "displayName": "Processing Mode",
+              "inputType": "combo",
+              "defaultValue": "Sync",
+              "required": "false",
+              "helpTip": "Message processing mode (e.g., Sync, Async).",
+              "comboValues": [
+                "Sync",
+                "Async"
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "messageWaitTimeout",
+              "displayName": "Message Wait Timeout (in milliseconds)",
+              "inputType": "string",
+              "required": "false",
+              "helpTip": "The maximum time to wait for a message before timing out (in milliseconds).",
+              "defaultValue": "1000"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "ackTimeoutMillis",
+              "displayName": "Ack Timeout (in milliseconds)",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "validateType": "number",
+              "helpTip": "Timeout for acknowledging messages (in milliseconds)."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "nackRedeliveryDelay",
+              "displayName": "Nack Redelivery Delay",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "validateType": "number",
+              "helpTip": "Delay before redelivering negatively acknowledged messages."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "dlqTopic",
+              "displayName": "DLQ Topic",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "Name of the Dead Letter Queue (DLQ) topic."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "dlqMaxRedeliverCount",
+              "displayName": "DLQ Max Redeliver Count",
+              "inputType": "string",
+              "defaultValue": "5",
+              "required": "false",
+              "validateType": "number",
+              "helpTip": "Maximum number of times a message will be redelivered before being sent to the DLQ."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "batchReceiveEnabled",
+              "displayName": "Receive in Batch",
+              "inputType": "boolean",
+              "defaultValue": "true",
+              "required": "false",
+              "helpTip": "Enable batch receiving of messages."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "batchingMaxMessages",
+              "displayName": "Batching Max Messages",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "validateType": "number",
+              "helpTip": "Maximum number of messages in a batch.",
+              "enableCondition": [
+                {
+                  "batchReceiveEnabled": "true"
+                }
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "batchingMaxBytes",
+              "displayName": "Batching Max Bytes",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "validateType": "number",
+              "helpTip": "Maximum size of a batch in bytes.",
+              "enableCondition": [
+                {
+                  "batchReceiveEnabled": "true"
+                }
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "batchingTimeout",
+              "displayName": "Batching Timeout (in milliseconds)",
+              "inputType": "string",
+              "defaultValue": "1000",
+              "required": "false",
+              "validateType": "number",
+              "helpTip": "Timeout for batching messages (in milliseconds).",
+              "enableCondition": [
+                {
+                  "batchReceiveEnabled": "true"
+                }
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "batchIndexAckEnabled",
+              "displayName": "Enable Batch Index Acknowledgment",
+              "inputType": "boolean",
+              "defaultValue": "true",
+              "required": "false",
+              "helpTip": "Enable batch index acknowledgment.",
+              "enableCondition": [
+                {
+                  "batchReceiveEnabled": "true"
+                }
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "maxPendingChunkedMessage",
+              "displayName": "Max Pending Chunked Message",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "validateType": "number",
+              "helpTip": "Maximum number of pending chunked messages allowed."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "expiryTimeOfIncompleteChunkedMessageMillis",
+              "displayName": "Expiry Time Of Incomplete Chunked Message (ms)",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "validateType": "number",
+              "helpTip": "Expiry time for incomplete chunked messages (in milliseconds)."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "autoAckOldestChunkedMessageOnQueueFull",
+              "displayName": "Auto Ack Oldest Chunked Message On Queue Full",
+              "inputType": "boolean",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "Automatically acknowledge the oldest chunked message when the queue is full."
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Advanced",
+              "isCollapsed": true,
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "autoUpdatePartitions",
+                    "displayName": "Auto Update Partitions",
+                    "inputType": "boolean",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Enable automatic partition updates."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "autoUpdatePartitionsIntervalSeconds",
+                    "displayName": "Auto Update Partitions Interval (s)",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "validateType": "number",
+                    "helpTip": "Interval for automatic partition updates (in seconds).",
+                    "enableCondition": [
+                      {
+                        "autoUpdatePartitions": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "receiverQueueSize",
+                    "displayName": "Receiver Queue Size",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "validateType": "number",
+                    "helpTip": "Size of the consumer's receiver queue."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "maxTotalReceiverQueueSizeAcrossPartitions",
+                    "displayName": "Max Total Receiver Queue Size Across Partitions",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "validateType": "number",
+                    "helpTip": "Maximum total receiver queue size across all partitions."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "replicateSubscriptionState",
+                    "displayName": "Replicate Subscription State",
+                    "inputType": "boolean",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Replicate the subscription state across clusters."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "readCompacted",
+                    "displayName": "Read Compacted",
+                    "inputType": "boolean",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Read messages from the compacted topic."
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
