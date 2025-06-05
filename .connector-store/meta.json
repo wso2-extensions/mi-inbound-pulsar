@@ -7,7 +7,7 @@
     "rank": 15,
     "type": "Inbound",
     "category": "Developer Tools",
-    "documentationUrl": "",
+    "documentationUrl": "https://mi.docs.wso2.com/en/latest/reference/connectors/pulsar-connector/pulsar-inbound-endpoint-example/",
     "description": "Apache Pulsar inbound endpoint acts as a message consumer for Apache Pulsar. It receives messages from configured topics of Apache Pulsar platform and inject them into the mediation flow.",
     "status": "Active",
     "labels": [

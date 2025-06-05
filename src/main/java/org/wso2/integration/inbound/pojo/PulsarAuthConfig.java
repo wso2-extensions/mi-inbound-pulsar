@@ -26,7 +26,6 @@ public abstract class PulsarAuthConfig extends PulsarConnectionConfig {
     private String authParams;
     protected String authPluginClassName;
 
-
     public abstract String getAuthMethod();
 
     public abstract Authentication getAuthentication();

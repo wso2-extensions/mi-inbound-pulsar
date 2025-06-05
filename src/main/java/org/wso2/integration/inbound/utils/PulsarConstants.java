@@ -66,7 +66,7 @@ public class PulsarConstants {
     public static final String TLS_PROTOCOLS = "tlsProtocols";
     public static final String USE_TLS = "useTLS";
 
-    public static final String AUTH_TYPE = "authorizationType";
+    public static final String AUTH_TYPE = "authenticationType";
     public static final String AUTH_JWT = "JWT";
     public static final String AUTH_TLS = "TLS";
     public static final String AUTH_OAUTH2 = "OAUTH2";

@@ -118,7 +118,7 @@
             "type": "attribute",
             "value": {
               "name": "useTLS",
-              "displayName": "Enable TLS",
+              "displayName": "Enable TLS Encryption",
               "inputType": "boolean",
               "defaultValue": "false",
               "required": "true",
@@ -157,6 +157,22 @@
                 {
                   "type": "attribute",
                   "value": {
+                    "name": "useKeyStoreTls",
+                    "displayName": "Use KeyStore TLS",
+                    "inputType": "boolean",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Enable TLS using a Java KeyStore.",
+                    "enableCondition": [
+                      {
+                        "tlsAllowInsecureConnection": "false"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
                     "name": "tlsTrustCertsFilePath",
                     "displayName": "Broker CA Certificate Path",
                     "inputType": "string",
@@ -164,8 +180,12 @@
                     "required": "false",
                     "helpTip": "Path to the trusted TLS certificate file.",
                     "enableCondition": [
+                      "AND",
                       {
                         "tlsAllowInsecureConnection": "false"
+                      },
+                      {
+                        "useKeyStoreTls": "false"
                       }
                     ]
                   }
@@ -180,8 +200,12 @@
                     "required": "false",
                     "helpTip": "Path to the TLS trust store file.",
                     "enableCondition": [
+                      "AND",
                       {
                         "tlsAllowInsecureConnection": "false"
+                      },
+                      {
+                        "useKeyStoreTls": "true"
                       }
                     ]
                   }
@@ -196,8 +220,12 @@
                     "required": "false",
                     "helpTip": "Password for the TLS trust store.",
                     "enableCondition": [
+                      "AND",
                       {
                         "tlsAllowInsecureConnection": "false"
+                      },
+                      {
+                        "useKeyStoreTls": "true"
                       }
                     ]
                   }
@@ -212,8 +240,12 @@
                     "required": "false",
                     "helpTip": "Type of the TLS trust store (e.g., JKS, PKCS12).",
                     "enableCondition": [
+                      "AND",
                       {
                         "tlsAllowInsecureConnection": "false"
+                      },
+                      {
+                        "useKeyStoreTls": "true"
                       }
                     ]
                   }
@@ -282,22 +314,6 @@
                       }
                     ]
                   }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "useKeyStoreTls",
-                    "displayName": "Use KeyStore TLS",
-                    "inputType": "boolean",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "Enable TLS using a Java KeyStore.",
-                    "enableCondition": [
-                      {
-                        "tlsAllowInsecureConnection": "false"
-                      }
-                    ]
-                  }
                 }
               ],
               "enableCondition": [
@@ -310,18 +326,18 @@
           {
             "type": "attributeGroup",
             "value": {
-              "groupName": "Authorization",
+              "groupName": "Authentication",
               "isCollapsed": true,
               "elements": [
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "authorizationType",
-                    "displayName": "Authorization Type",
+                    "name": "authenticationType",
+                    "displayName": "Authentication Type",
                     "inputType": "combo",
                     "defaultValue": "None",
                     "required": "false",
-                    "helpTip": "The authorization mechanism to use for authenticating with Pulsar. Supported values: None, JWT, TLS, OAuth2.",
+                    "helpTip": "The authentication mechanism to use for authenticating with Pulsar. Supported values: None, JWT, TLS, OAuth2.",
                     "comboValues": [
                       "None",
                       "JWT"
@@ -339,7 +355,7 @@
                     "helpTip": "The JSON Web Token (JWT) used for authenticating with the Pulsar broker.",
                     "enableCondition": [
                       {
-                        "authorizationType": "JWT"
+                        "authenticationType": "JWT"
                       }
                     ]
                   }
@@ -741,21 +757,6 @@
           {
             "type": "attribute",
             "value": {
-              "name": "processingMode",
-              "displayName": "Processing Mode",
-              "inputType": "combo",
-              "defaultValue": "Sync",
-              "required": "false",
-              "helpTip": "Message processing mode (e.g., Sync, Async).",
-              "comboValues": [
-                "Sync",
-                "Async"
-              ]
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
               "name": "contentType",
               "displayName": "Message Content Type",
               "inputType": "combo",
@@ -765,6 +766,21 @@
               "comboValues": [
                 "application/json",
                 "text/plain"
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "processingMode",
+              "displayName": "Processing Mode",
+              "inputType": "combo",
+              "defaultValue": "Sync",
+              "required": "false",
+              "helpTip": "Message processing mode (e.g., Sync, Async).",
+              "comboValues": [
+                "Sync",
+                "Async"
               ]
             }
           },
@@ -783,7 +799,7 @@
             "type": "attribute",
             "value": {
               "name": "ackTimeoutMillis",
-              "displayName": "Ack Timeout (ms)",
+              "displayName": "Ack Timeout (in milliseconds)",
               "inputType": "string",
               "defaultValue": "",
               "required": "false",
