@@ -3,7 +3,7 @@
   <groupId>org.wso2.integration.inbound</groupId>
   <artifactId>mi-inbound-pulsar</artifactId>
   <packaging>bundle</packaging>
-  <version>0.9.0</version>
+  <version>0.9.1-SNAPSHOT</version>
   <name>Apache Pulsar Inbound Endpoint</name>
   <url>http://maven.apache.org</url>
 
@@ -87,7 +87,7 @@
     <developerConnection>
       scm:git:https://github.com/wso2-extensions/mi-inbound-pulsar
     </developerConnection>
-    <tag>v0.9.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <build>
