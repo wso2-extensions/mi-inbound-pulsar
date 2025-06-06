@@ -133,8 +133,18 @@
               "inputType": "string",
               "required": "true",
               "defaultValue": "",
-              "placeholder": "pulsar://",
-              "helpTip": "The Pulsar service URL to connect to (e.g., pulsar://localhost:6650)."
+              "helpTip": "The Pulsar service URL to connect to. For a plain (non-secure) connection, use pulsar://<host_name>:<port>. For a secure (TLS) connection, use pulsar+ssl://<host_name>:<port>.",
+              "placeholder": {
+                "conditionField": "useTLS",
+                "values": [
+                  {
+                    "false": "Enter the broker URL starting with pulsar:// (e.g., pulsar://localhost:6650)"
+                  },
+                  {
+                    "true": "Enter the broker URL starting with pulsar+ssl:// (e.g., pulsar+ssl://localhost:6651)"
+                  }
+                ]
+              }
             }
           },
           {
@@ -160,7 +170,7 @@
                     "name": "useKeyStoreTls",
                     "displayName": "Use KeyStore TLS",
                     "inputType": "boolean",
-                    "defaultValue": "",
+                    "defaultValue": "false",
                     "required": "false",
                     "helpTip": "Enable TLS using a Java KeyStore.",
                     "enableCondition": [
@@ -729,7 +739,7 @@
               "name": "subscriptionTopicsMode",
               "displayName": "Subscription Topics Mode",
               "inputType": "combo",
-              "defaultValue": "",
+              "defaultValue": "PersistentOnly",
               "required": "false",
               "helpTip": "Mode for subscribing to topics (e.g., AllTopics, PersistentOnly, NonPersistentOnly).",
               "comboValues": [
@@ -772,6 +782,17 @@
           {
             "type": "attribute",
             "value": {
+              "name": "messageWaitTimeout",
+              "displayName": "Message Wait Timeout (in milliseconds)",
+              "inputType": "string",
+              "required": "false",
+              "helpTip": "The maximum time to wait for a message before timing out (in milliseconds).",
+              "defaultValue": "1000"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
               "name": "processingMode",
               "displayName": "Processing Mode",
               "inputType": "combo",
@@ -782,17 +803,6 @@
                 "Sync",
                 "Async"
               ]
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "messageWaitTimeout",
-              "displayName": "Message Wait Timeout (in milliseconds)",
-              "inputType": "string",
-              "required": "false",
-              "helpTip": "The maximum time to wait for a message before timing out (in milliseconds).",
-              "defaultValue": "1000"
             }
           },
           {
@@ -843,124 +853,124 @@
             }
           },
           {
-            "type": "attribute",
-            "value": {
-              "name": "batchReceiveEnabled",
-              "displayName": "Receive in Batch",
-              "inputType": "boolean",
-              "defaultValue": "true",
-              "required": "false",
-              "helpTip": "Enable batch receiving of messages."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "batchingMaxMessages",
-              "displayName": "Batching Max Messages",
-              "inputType": "string",
-              "defaultValue": "",
-              "required": "false",
-              "validateType": "number",
-              "helpTip": "Maximum number of messages in a batch.",
-              "enableCondition": [
-                {
-                  "batchReceiveEnabled": "true"
-                }
-              ]
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "batchingMaxBytes",
-              "displayName": "Batching Max Bytes",
-              "inputType": "string",
-              "defaultValue": "",
-              "required": "false",
-              "validateType": "number",
-              "helpTip": "Maximum size of a batch in bytes.",
-              "enableCondition": [
-                {
-                  "batchReceiveEnabled": "true"
-                }
-              ]
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "batchingTimeout",
-              "displayName": "Batching Timeout (in milliseconds)",
-              "inputType": "string",
-              "defaultValue": "1000",
-              "required": "false",
-              "validateType": "number",
-              "helpTip": "Timeout for batching messages (in milliseconds).",
-              "enableCondition": [
-                {
-                  "batchReceiveEnabled": "true"
-                }
-              ]
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "batchIndexAckEnabled",
-              "displayName": "Enable Batch Index Acknowledgment",
-              "inputType": "boolean",
-              "defaultValue": "true",
-              "required": "false",
-              "helpTip": "Enable batch index acknowledgment.",
-              "enableCondition": [
-                {
-                  "batchReceiveEnabled": "true"
-                }
-              ]
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "maxPendingChunkedMessage",
-              "displayName": "Max Pending Chunked Message",
-              "inputType": "string",
-              "defaultValue": "",
-              "required": "false",
-              "validateType": "number",
-              "helpTip": "Maximum number of pending chunked messages allowed."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "expiryTimeOfIncompleteChunkedMessageMillis",
-              "displayName": "Expiry Time Of Incomplete Chunked Message (ms)",
-              "inputType": "string",
-              "defaultValue": "",
-              "required": "false",
-              "validateType": "number",
-              "helpTip": "Expiry time for incomplete chunked messages (in milliseconds)."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "autoAckOldestChunkedMessageOnQueueFull",
-              "displayName": "Auto Ack Oldest Chunked Message On Queue Full",
-              "inputType": "boolean",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip": "Automatically acknowledge the oldest chunked message when the queue is full."
-            }
-          },
-          {
             "type": "attributeGroup",
             "value": {
               "groupName": "Advanced",
               "isCollapsed": true,
               "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "batchReceiveEnabled",
+                    "displayName": "Receive in Batch",
+                    "inputType": "boolean",
+                    "defaultValue": "false",
+                    "required": "false",
+                    "helpTip": "Enable batch receiving of messages."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "batchingMaxMessages",
+                    "displayName": "Batching Max Messages",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "validateType": "number",
+                    "helpTip": "Maximum number of messages in a batch.",
+                    "enableCondition": [
+                      {
+                        "batchReceiveEnabled": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "batchingMaxBytes",
+                    "displayName": "Batching Max Bytes",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "validateType": "number",
+                    "helpTip": "Maximum size of a batch in bytes.",
+                    "enableCondition": [
+                      {
+                        "batchReceiveEnabled": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "batchingTimeout",
+                    "displayName": "Batching Timeout (in milliseconds)",
+                    "inputType": "string",
+                    "defaultValue": "1000",
+                    "required": "false",
+                    "validateType": "number",
+                    "helpTip": "Timeout for batching messages (in milliseconds).",
+                    "enableCondition": [
+                      {
+                        "batchReceiveEnabled": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "batchIndexAckEnabled",
+                    "displayName": "Enable Batch Index Acknowledgment",
+                    "inputType": "boolean",
+                    "defaultValue": "true",
+                    "required": "false",
+                    "helpTip": "Enable batch index acknowledgment.",
+                    "enableCondition": [
+                      {
+                        "batchReceiveEnabled": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "maxPendingChunkedMessage",
+                    "displayName": "Max Pending Chunked Message",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "validateType": "number",
+                    "helpTip": "Maximum number of pending chunked messages allowed."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "expiryTimeOfIncompleteChunkedMessageMillis",
+                    "displayName": "Expiry Time Of Incomplete Chunked Message (in milliseconds)",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "validateType": "number",
+                    "helpTip": "Expiry time for incomplete chunked messages (in milliseconds)."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "autoAckOldestChunkedMessageOnQueueFull",
+                    "displayName": "Auto Ack Oldest Chunked Message On Queue Full",
+                    "inputType": "boolean",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Automatically acknowledge the oldest chunked message when the queue is full."
+                  }
+                },
                 {
                   "type": "attribute",
                   "value": {
@@ -976,7 +986,7 @@
                   "type": "attribute",
                   "value": {
                     "name": "autoUpdatePartitionsIntervalSeconds",
-                    "displayName": "Auto Update Partitions Interval (s)",
+                    "displayName": "Auto Update Partitions Interval (in seconds)",
                     "inputType": "string",
                     "defaultValue": "",
                     "required": "false",

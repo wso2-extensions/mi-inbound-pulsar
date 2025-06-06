@@ -80,6 +80,16 @@
       <url>https://maven.wso2.org/nexus/content/repositories/releases/</url>
     </repository>
   </distributionManagement>
+  <scm>
+    <connection>
+      scm:git:https://github.com/wso2-extensions/mi-inbound-pulsar.git
+    </connection>
+    <url>https://github.com/wso2-extensions/mi-inbound-pulsar.git</url>
+    <developerConnection>
+      scm:git:https://github.com/wso2-extensions/mi-inbound-pulsar
+    </developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
   <build>
     <plugins>
