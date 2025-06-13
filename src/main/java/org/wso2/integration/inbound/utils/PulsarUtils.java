@@ -93,7 +93,6 @@ public class PulsarUtils {
         config.setTlsTrustStorePath(properties.getProperty(PulsarConstants.TLS_TRUST_STORE_PATH));
         config.setTlsTrustStorePassword(properties.getProperty(PulsarConstants.TLS_TRUST_STORE_PASSWORD));
         config.setTlsTrustStoreType(properties.getProperty(PulsarConstants.TLS_TRUST_STORE_TYPE));
-        config.setAutoCertRefreshSeconds(properties.getProperty(PulsarConstants.AUTO_CERT_REFRESH_SECONDS));
 
         return config;
     }

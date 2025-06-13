@@ -56,7 +56,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.SortedMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -669,7 +668,14 @@ public class PulsarMessageConsumer extends GenericPollingConsumer {
      */
     private boolean isRollback(MessageContext msgCtx) {
         // check rollback property from synapse context
-        Object rollbackProp = msgCtx.getProperty("SET_ROLLBACK_ONLY");
+        Object rollbackProp = msgCtx.getProperty(PulsarConstants.SET_ROLLBACK_ONLY);
+        if (rollbackProp == null) {
+            // check rollback property from operation context in axis2 message context
+            org.apache.axis2.context.MessageContext axis2MessageCtx =
+                    ((Axis2MessageContext) msgCtx).getAxis2MessageContext();
+            rollbackProp = axis2MessageCtx.getOperationContext().getProperty(PulsarConstants.SET_ROLLBACK_ONLY);
+        }
+
         if (rollbackProp != null) {
             return (rollbackProp instanceof Boolean && ((Boolean) rollbackProp))
                     || (rollbackProp instanceof String && Boolean.valueOf((String) rollbackProp));

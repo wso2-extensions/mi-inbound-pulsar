@@ -74,7 +74,6 @@ public class PulsarConstants {
     public static final String AUTH_PARAM_MAP = "authParamMap";
     public static final String AUTH_PARAMS = "authParams";
     public static final String AUTH_PLUGIN_CLASS_NAME = "authPluginClassName";
-    public static final String AUTO_CERT_REFRESH_SECONDS = "autoCertRefreshSeconds";
     public static final String JWT_TOKEN = "jwtToken";
 
     public static final String TOPIC_NAMES = "topicNames";
@@ -120,5 +119,7 @@ public class PulsarConstants {
     public static final String MSG_ID = "messageId";
     public static final String KEY = "key";
     public static final String REDELIVERY_COUNT = "redeliveryCount";
+
+    public static final String SET_ROLLBACK_ONLY = "SET_ROLLBACK_ONLY";
 
 }
