@@ -36,6 +36,7 @@
     <pulsar.version>4.0.4</pulsar.version>
     <carbon.mediation.version>4.4.10</carbon.mediation.version>
     <fasterxml.jackson.version>2.15.2</fasterxml.jackson.version>
+    <pulsar.client.version>${pulsar.version}.wso2v2</pulsar.client.version>
   </properties>
 
   <repositories>
