@@ -1,0 +1,11 @@
+dependencies:
+  - groupId: "org.wso2.orbit.pulsar"
+    artifactId: "pulsar-client"
+    version: "${pulsar.client.version}"
+  - groupId: "org.wso2.integration.inbound"
+    artifactId: "mi-inbound-pulsar"
+    version: "${pulsar.inbound.version}"
+
+repositories:
+  - id: "wso2-nexus"
+    url: "https://maven.wso2.org/nexus/content/groups/wso2-public/"
