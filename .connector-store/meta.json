@@ -17,13 +17,503 @@
     ],
     "releases": [
         {
-            "tagName": "v0.9.2",
+            "tagName": "v0.9.3",
             "products": [
                 "MI 4.4.0"
             ],
-            "operations": [],
-            "connections": [],
-            "isHidden": false
+            "operations": [
+                {
+                    "name": "init",
+                    "description": "Initialize Kafka Inbound Endpoint",
+                    "params": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Unique identifier for the Pulsar event integration."
+                        },
+                        {
+                            "name": "class",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "org.wso2.integration.inbound.PulsarMessageConsumer",
+                            "description": ""
+                        },
+                        {
+                            "name": "generateSequences",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "True",
+                            "description": ""
+                        },
+                        {
+                            "name": "sequence",
+                            "type": "keyOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Sequence to inject the Pulsar message"
+                        },
+                        {
+                            "name": "onError",
+                            "type": "keyOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Error sequence to invoke on fault"
+                        },
+                        {
+                            "name": "suspend",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "False",
+                            "description": "Suspend Inbound"
+                        },
+                        {
+                            "name": "interval",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "100",
+                            "description": "The polling interval for the Apache Pulsar inbound endpoint in milliseconds."
+                        },
+                        {
+                            "name": "coordination",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "True",
+                            "description": "In a clustered setup, this will run the inbound only in a single worker node."
+                        },
+                        {
+                            "name": "useTLS",
+                            "type": "boolean",
+                            "required": true,
+                            "defaultValue": "false",
+                            "description": "Enable TLS to secure the connection between the client and Pulsar broker."
+                        },
+                        {
+                            "name": "serviceUrl",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The Pulsar service URL to connect to. For a plain (non-secure) connection, use pulsar://<host_name>:<port>. For a secure (TLS) connection, use pulsar+ssl://<host_name>:<port>."
+                        },
+                        {
+                            "name": "tlsAllowInsecureConnection",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Allow insecure TLS connections by skipping certificate validation."
+                        },
+                        {
+                            "name": "useKeyStoreTls",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Enable TLS using a Java KeyStore."
+                        },
+                        {
+                            "name": "tlsTrustCertsFilePath",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Path to the trusted TLS certificate file."
+                        },
+                        {
+                            "name": "tlsTrustStorePath",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Path to the TLS trust store file."
+                        },
+                        {
+                            "name": "tlsTrustStorePassword",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Password for the TLS trust store."
+                        },
+                        {
+                            "name": "tlsTrustStoreType",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Type of the TLS trust store (e.g., JKS, PKCS12)."
+                        },
+                        {
+                            "name": "tlsProtocols",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Comma-separated list of enabled TLS protocols (e.g., TLSv1.2,TLSv1.3)."
+                        },
+                        {
+                            "name": "tlsCiphers",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Comma-separated list of enabled TLS cipher suites."
+                        },
+                        {
+                            "name": "enableTlsHostnameVerification",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Enable hostname verification for TLS connections."
+                        },
+                        {
+                            "name": "authenticationType",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "None",
+                            "description": "The authentication mechanism to use for authenticating with Pulsar. Supported values: None, JWT, TLS, OAuth2."
+                        },
+                        {
+                            "name": "jwtToken",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The JSON Web Token (JWT) used for authenticating with the Pulsar broker."
+                        },
+                        {
+                            "name": "connectionTimeoutMs",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Timeout for establishing a connection (in milliseconds)."
+                        },
+                        {
+                            "name": "operationTimeoutSeconds",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Timeout for client operations (in seconds)."
+                        },
+                        {
+                            "name": "requestTimeoutMs",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Timeout for requests (in milliseconds)."
+                        },
+                        {
+                            "name": "lookupTimeoutMs",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Timeout for lookup requests (in milliseconds)."
+                        },
+                        {
+                            "name": "connectionMaxIdleSeconds",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum idle time for connections (in seconds)."
+                        },
+                        {
+                            "name": "numIoThreads",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Number of IO threads for Pulsar client."
+                        },
+                        {
+                            "name": "numListenerThreads",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Number of listener threads for Pulsar client."
+                        },
+                        {
+                            "name": "enableBusyWait",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Enable busy-wait for IO threads."
+                        },
+                        {
+                            "name": "initialBackoffIntervalNanos",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Initial backoff interval for reconnection attempts (in nanoseconds)."
+                        },
+                        {
+                            "name": "maxBackoffIntervalNanos",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum backoff interval for reconnection attempts (in nanoseconds)."
+                        },
+                        {
+                            "name": "connectionsPerBroker",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Number of connections per broker."
+                        },
+                        {
+                            "name": "concurrentLookupRequest",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Number of concurrent lookup requests allowed."
+                        },
+                        {
+                            "name": "maxLookupRedirects",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of lookup redirects allowed."
+                        },
+                        {
+                            "name": "maxLookupRequest",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of lookup requests."
+                        },
+                        {
+                            "name": "maxNumberOfRejectedRequestPerConnection",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of rejected requests per connection."
+                        },
+                        {
+                            "name": "useTcpNoDelay",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Enable TCP no delay for network connections."
+                        },
+                        {
+                            "name": "enableTransaction",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Enable transaction support in Pulsar client."
+                        },
+                        {
+                            "name": "keepAliveIntervalSeconds",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Keep-alive interval for broker connections (in seconds)."
+                        },
+                        {
+                            "name": "statsIntervalSeconds",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Interval for statistics collection (in seconds)."
+                        },
+                        {
+                            "name": "memoryLimitBytes",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Memory limit for Pulsar client (in bytes)."
+                        },
+                        {
+                            "name": "listenerName",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Listener name for the Pulsar client."
+                        },
+                        {
+                            "name": "topicNames",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Comma-separated list of topic names to subscribe to."
+                        },
+                        {
+                            "name": "topicsPattern",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Pattern to match topic names for subscription."
+                        },
+                        {
+                            "name": "subscriptionName",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the subscription."
+                        },
+                        {
+                            "name": "subscriptionType",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "Exclusive",
+                            "description": "Type of subscription (e.g., Exclusive, Shared, Failover, Key_Shared)."
+                        },
+                        {
+                            "name": "subscriptionTopicsMode",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "PersistentOnly",
+                            "description": "Mode for subscribing to topics (e.g., AllTopics, PersistentOnly, NonPersistentOnly)."
+                        },
+                        {
+                            "name": "subscriptionInitialPosition",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "Latest",
+                            "description": "Initial position for the subscription (e.g., Latest, Earliest)."
+                        },
+                        {
+                            "name": "contentType",
+                            "type": "combo",
+                            "required": true,
+                            "defaultValue": "text/plain",
+                            "description": "The content type of the incoming Pulsar message (e.g., application/json, text/xml)."
+                        },
+                        {
+                            "name": "messageWaitTimeout",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "1000",
+                            "description": "The maximum time to wait for a message before timing out (in milliseconds)."
+                        },
+                        {
+                            "name": "processingMode",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "Sync",
+                            "description": "Message processing mode (e.g., Sync, Async)."
+                        },
+                        {
+                            "name": "ackTimeoutMillis",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Timeout for acknowledging messages (in milliseconds)."
+                        },
+                        {
+                            "name": "nackRedeliveryDelay",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Delay before redelivering negatively acknowledged messages."
+                        },
+                        {
+                            "name": "dlqTopic",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Name of the Dead Letter Queue (DLQ) topic."
+                        },
+                        {
+                            "name": "dlqMaxRedeliverCount",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "5",
+                            "description": "Maximum number of times a message will be redelivered before being sent to the DLQ."
+                        },
+                        {
+                            "name": "batchReceiveEnabled",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Enable batch receiving of messages."
+                        },
+                        {
+                            "name": "batchingMaxMessages",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of messages in a batch."
+                        },
+                        {
+                            "name": "batchingMaxBytes",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum size of a batch in bytes."
+                        },
+                        {
+                            "name": "batchingTimeout",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "1000",
+                            "description": "Timeout for batching messages (in milliseconds)."
+                        },
+                        {
+                            "name": "batchIndexAckEnabled",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "true",
+                            "description": "Enable batch index acknowledgment."
+                        },
+                        {
+                            "name": "maxPendingChunkedMessage",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of pending chunked messages allowed."
+                        },
+                        {
+                            "name": "expiryTimeOfIncompleteChunkedMessageMillis",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Expiry time for incomplete chunked messages (in milliseconds)."
+                        },
+                        {
+                            "name": "autoAckOldestChunkedMessageOnQueueFull",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Automatically acknowledge the oldest chunked message when the queue is full."
+                        },
+                        {
+                            "name": "autoUpdatePartitions",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Enable automatic partition updates."
+                        },
+                        {
+                            "name": "autoUpdatePartitionsIntervalSeconds",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Interval for automatic partition updates (in seconds)."
+                        },
+                        {
+                            "name": "receiverQueueSize",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Size of the consumer's receiver queue."
+                        },
+                        {
+                            "name": "maxTotalReceiverQueueSizeAcrossPartitions",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum total receiver queue size across all partitions."
+                        },
+                        {
+                            "name": "replicateSubscriptionState",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Replicate the subscription state across clusters."
+                        },
+                        {
+                            "name": "readCompacted",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Read messages from the compacted topic."
+                        }
+                    ],
+                    "isHidden": false
+                }
+            ],
+            "connections": []
         }
     ]
 }
